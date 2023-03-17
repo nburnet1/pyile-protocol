@@ -18,6 +18,7 @@ The protocol is used for communication and authentication between peers.
 <h3>Security</h3>
 
 <h2>Code Example</h2>
-```python
 
+```python
+print("Stub")
 ```
