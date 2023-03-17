@@ -1,8 +1,3 @@
-<body style="
-background-color: black;
-padding: 20px;
-color:wheat;
-">
 <h1 style="text-align:center;">Pyile Protocol Documentation:</h1>
 <h2>Introduction:</h2>
 <p>
@@ -26,4 +21,3 @@ The protocol is used for communication and authentication between peers.
 ```python
 
 ```
-</body>
