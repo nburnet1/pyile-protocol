@@ -1,7 +1,7 @@
-from auth_peer import AuthPeer
+from lib.auth_peer import AuthPeer
+
 
 def test_auth():
-    print("hello world")
-    auth_peer = AuthPeer(("192.168.1.66", 1234))
-    auth_peer.authenticate_peer()
-
+    auth_peer = AuthPeer("auth peer", ("192.168.1.66", 4702),3)
+    print(auth_peer)
+    auth_peer.authenticate_peers()
