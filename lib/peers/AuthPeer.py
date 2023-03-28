@@ -1,4 +1,4 @@
-from lib.Peer import Peer
+from lib.peers.Peer import Peer
 from lib.error import *
 
 

@@ -1,5 +1,5 @@
-from lib.AuthPeer import AuthPeer
-import threading
+from lib.peers.AuthPeer import AuthPeer
+
 
 def test_auth():
     # auth_peer = AuthPeer("auth peer", ("192.168.1.66", 4702),3)
