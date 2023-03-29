@@ -1,6 +1,7 @@
 import pickle
 import random
 import socket
+import threading
 
 from lib.peers.Peer import Peer
 from lib.error import *
@@ -46,8 +47,8 @@ class JoinPeer(Peer):
             except AuthenticationException as e:
                 print(e)
                 return False
-            finally:
-                self.auth_socket.close()
+
+
 
         # Connect to initial peer
         try:
@@ -67,4 +68,23 @@ class JoinPeer(Peer):
             return
 
         # Performs password check
-        return password_check()
+        authenticated = password_check()
+        if authenticated:
+            self.join_beat()
+
+    def join_beat(self):
+        try:
+            self.auth_socket.settimeout(10)
+            beat = self.auth_socket.recv(self.BUFFER).decode(self.ENCODE)
+            print("Heart beat received")
+            if not beat:
+                raise Exception("Server Disconnect")
+
+            self.auth_socket.send("heartbeat".encode(self.ENCODE))
+        except Exception as e:
+            print(e)
+            self.auth_socket.close()
+            return
+
+        threading.Timer(5, self.join_beat).start()
+
