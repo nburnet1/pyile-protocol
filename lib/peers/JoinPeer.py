@@ -1,3 +1,7 @@
+import pickle
+import random
+import socket
+
 from lib.peers.Peer import Peer
 from lib.error import *
 
@@ -6,6 +10,8 @@ class JoinPeer(Peer):
     def __init__(self, username, address):
         Peer.__init__(self, username=username, address=address)
         self.auth_peer = None
+
+
 
     def get_authenticated(self, starting_address, password):
         """
@@ -21,34 +27,43 @@ class JoinPeer(Peer):
             :return: boolean True if authenticated, False if not
             """
             try:
-                self.socket.send(password.encode(self.ENCODE))
-                pw_status = self.socket.recv(self.BUFFER).decode(self.ENCODE)
+                self.auth_socket.send(password.encode(self.ENCODE))
+                pw_status = self.auth_socket.recv(self.BUFFER).decode(self.ENCODE)
                 if pw_status == "authenticated":
                     print(str(password) + " is correct")
-                    self.auth_peer
+                    # adding auth peer
+                    self.auth_peer = starting_address
+                    # sends new socket to auth peer
+                    pickled_socket = pickle.dumps(self.peer_address)
+                    self.auth_socket.send(pickled_socket)
+                    # receives peers from auth peer
+                    recv_peers = self.auth_socket.recv(self.BUFFER)
+                    self.peers = pickle.loads(recv_peers)
+                    print("Received peers from auth: ", self.peers)
                     return True
                 elif pw_status == "notauthenticated":
                     raise AuthenticationException("Password is incorrect")
-                    return False
             except AuthenticationException as e:
                 print(e)
-                self.socket.close()
+                return False
+            finally:
+                self.auth_socket.close()
 
         # Connect to initial peer
         try:
-            self.socket.connect(starting_address)
+            self.auth_socket.connect(starting_address)
         except ConnectionRefusedError:
-            self.socket.close()
+            self.auth_socket.close()
 
         # Receive banned status from initial peer
         try:
-            banned = self.socket.recv(self.BUFFER).decode(self.ENCODE)
+            banned = self.auth_socket.recv(self.BUFFER).decode(self.ENCODE)
             print(banned)
             if banned == "banned":
-                raise AuthenticationException("You are banned from this community")
+                raise AuthenticationException("You are banned from this network")
         except AuthenticationException as e:
             print(e)
-            self.socket.close()
+            self.auth_socket.close()
             return
 
         # Performs password check
