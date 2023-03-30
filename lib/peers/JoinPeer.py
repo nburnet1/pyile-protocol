@@ -8,8 +8,8 @@ from lib.error import *
 
 
 class JoinPeer(Peer):
-    def __init__(self, username, address):
-        Peer.__init__(self, username=username, address=address)
+    def __init__(self, address):
+        Peer.__init__(self, address=address)
         self.auth_peer = None
 
 
@@ -70,21 +70,40 @@ class JoinPeer(Peer):
         # Performs password check
         authenticated = password_check()
         if authenticated:
-            self.join_beat()
+            self.recv_status()
 
-    def join_beat(self):
+    def recv_status(self):
         try:
             self.auth_socket.settimeout(10)
-            beat = self.auth_socket.recv(self.BUFFER).decode(self.ENCODE)
-            print("Heart beat received")
+            beat = self.auth_socket.recv(self.BUFFER)
+            pickled_beat = pickle.loads(beat)
+            # print(pickled_beat)
             if not beat:
-                raise Exception("Server Disconnect")
+                raise StatusException("Server Disconnect")
 
-            self.auth_socket.send("heartbeat".encode(self.ENCODE))
-        except Exception as e:
+            if pickled_beat['type'] == "set":
+                print(pickled_beat)
+                self.peers = pickled_beat["data"]
+
+            self.auth_socket.send("<3>".encode(self.ENCODE))
+        except StatusException as e:
             print(e)
             self.auth_socket.close()
+            exit(1)
             return
 
-        threading.Timer(5, self.join_beat).start()
+        threading.Timer(1, self.recv_status).start()
+
+    # def recv_set(self):
+    #     try:
+    #         set = self.auth_socket.recv(self.BUFFER)
+    #         pickled_set = pickle.loads(set)
+    #         print(pickled_set)
+    #
+    #     except Exception as e:
+    #         print(e)
+    #         self.auth_socket.close()
+    #         return
+    #     recv_thread = threading.thread(target=self.recv_set)
+    #     recv_thread.start()
 
