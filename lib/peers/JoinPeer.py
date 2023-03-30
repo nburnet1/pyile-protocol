@@ -74,6 +74,8 @@ class JoinPeer(Peer):
 
     def recv_status(self):
         try:
+            if self.disconnected:
+                raise StatusException("Disconnecting")
             self.auth_socket.settimeout(10)
             beat = self.auth_socket.recv(self.BUFFER)
             pickled_beat = pickle.loads(beat)

@@ -16,8 +16,11 @@ def test_peer():
     # address = input("Enter address:")
     # port = input("Enter port: ")
     # tup_address = (address, int(port))
-    connect_thread = threading.Thread(target=peer.connect)
-    connect_thread.start()
+    try:
+        connect_thread = threading.Thread(target=peer.connect)
+        connect_thread.start()
+    except:
+        print("threads terminated")
 
     while True:
         data = input("What do you want to send: ")
@@ -25,7 +28,8 @@ def test_peer():
             peer.auth_socket.close()
             peer.peer_socket.close()
             connect_thread.join()
-            exit(1)
+            peer.disconnected = True
+            return
         elif data == "peers":
             print(peer.peers)
         else:
