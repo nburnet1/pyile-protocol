@@ -16,12 +16,13 @@ def test_auth():
         print("threads terminated")
 
     while True:
-        data = input("What do you want to send: ")
+        data = input("~: ")
         if data == "exit":
             auth_peer.auth_socket.close()
             auth_peer.peer_socket.close()
-            peer_thread.join()
             auth_peer.disconnected = True
+
+
             return
         elif data == "peers":
             print(auth_peer.peers)

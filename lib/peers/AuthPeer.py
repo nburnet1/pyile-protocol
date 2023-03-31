@@ -48,7 +48,7 @@ class AuthPeer(Peer):
             """
             try:
                 password = addr.recv(self.BUFFER).decode(self.ENCODE)
-                print(password)
+                print(addr.getpeername(), "Trying to login with password:", password)
                 if password == self.password:
                     # Sends authenticated status to peer
                     addr.send("authenticated".encode(self.ENCODE))
@@ -70,6 +70,8 @@ class AuthPeer(Peer):
         self.auth_socket.listen()
 
         while True:
+            if self.disconnected:
+                return
             addr, acc_connect = self.auth_socket.accept()
             print("Got connection from: ", addr.getpeername())
             # self.blocked_peers.add(addr.getpeername())  # Uncomment to test ban.
@@ -85,7 +87,7 @@ class AuthPeer(Peer):
                 if peer_address is not None:
                     self.auth_beat(addr, peer_address)
                     self.changes_made = True
-                    self.dist_set(addr, peer_address)
+                    # self.dist_set(addr, peer_address)
             else:
                 print(addr.getpeername(), "is banned")
                 addr.send("banned".encode(self.ENCODE))
@@ -96,8 +98,14 @@ class AuthPeer(Peer):
         Sends a heartbeat to the peer to check if it is still connected
         :return:
         """
+        if self.disconnected:
+            return
         try:
-            addr.send(pickle.dumps({"type": "<3", "data": "<3"}))
+            if self.changes_made:
+                addr.send(pickle.dumps({"type": "set", "data": self.peers}))
+                self.changes_made = False
+            else:
+                addr.send(pickle.dumps({"type": "<3", "data": "<3"}))
             addr.settimeout(10)
             beat = addr.recv(self.BUFFER)
             if not beat:
@@ -107,25 +115,9 @@ class AuthPeer(Peer):
             self.peers.remove(peer_address)
             print(self.peers)
             self.changes_made = True
-            addr.close()
             return
 
-        threading.Timer(1, self.auth_beat, args=(addr, peer_address)).start()
-
-    def dist_set(self, addr, peer_address):
-        if peer_address in self.peers:
-            try:
-                if self.changes_made:
-                    print("Changes were made")
-                    pickle_peer = pickle.dumps({"type": "set", "data": self.peers})
-                    addr.send(pickle_peer)
-                    self.changes_made = False
-            except Exception as e:
-                print(e)
-                print("Could not send set to peer at:", addr.getpeername())
-                addr.close()
-                return
-            threading.Thread(target=self.dist_set, args=(addr, peer_address)).start()
-
+        beat_thread = threading.Timer(2, self.auth_beat, args=(addr, peer_address))
+        beat_thread.start()
 
 

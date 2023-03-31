@@ -36,11 +36,11 @@ class Peer:
     def handle_peer(self, addr):
         data = addr.recv(self.BUFFER).decode(self.ENCODE)
         print(data)
-        addr.send("got it!".encode(self.ENCODE))
+        addr.send(data.encode(self.ENCODE))
 
     def connect(self):
         self.peer_socket.listen()
-        print("Listening for connections...")
+        # print("Listening for connections...")
         while not self.disconnected:
             addr, acc_connect = self.peer_socket.accept()
             self.handle_peer(addr)
@@ -56,12 +56,16 @@ class Peer:
             return
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as send_sock:
-            send_sock.connect(address)
-            print("sending: ", msg, "to", address)
-            send_sock.send(msg.encode(self.ENCODE))
-            data = send_sock.recv(self.BUFFER).decode(self.ENCODE)
-            print(data)
-            send_sock.close()
+            send_sock.settimeout(1)
+            try:
+                send_sock.connect(address)
+                # print("sending: ", msg, "to", address)
+                send_sock.send(msg.encode(self.ENCODE))
+                data = send_sock.recv(self.BUFFER).decode(self.ENCODE)
+            except Exception:
+                send_sock.close()
+                print("Peer at", address, "is not responding")
+
 
 
     def leave(self):

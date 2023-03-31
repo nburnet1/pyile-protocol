@@ -12,8 +12,6 @@ class JoinPeer(Peer):
         Peer.__init__(self, address=address)
         self.auth_peer = None
 
-
-
     def get_authenticated(self, starting_address, password):
         """
         The first method that should be called when a peer is created.
@@ -40,18 +38,19 @@ class JoinPeer(Peer):
                     # receives peers from auth peer
                     recv_peers = self.auth_socket.recv(self.BUFFER)
                     self.peers = pickle.loads(recv_peers)
-                    print("Received peers from auth: ", self.peers)
+                    # print("Received peers from auth: ", self.peers)
                     return True
                 elif pw_status == "notauthenticated":
                     raise AuthenticationException("Password is incorrect")
             except AuthenticationException as e:
                 print(e)
+                self.auth_socket.close()
+                self.peer_socket.close()
                 return False
-
-
 
         # Connect to initial peer
         try:
+            self.auth_socket.settimeout(2)
             self.auth_socket.connect(starting_address)
         except ConnectionRefusedError:
             self.auth_socket.close()
@@ -71,41 +70,28 @@ class JoinPeer(Peer):
         authenticated = password_check()
         if authenticated:
             self.recv_status()
-
-    def recv_status(self):
-        try:
-            if self.disconnected:
-                raise StatusException("Disconnecting")
-            self.auth_socket.settimeout(10)
-            beat = self.auth_socket.recv(self.BUFFER)
-            pickled_beat = pickle.loads(beat)
-            # print(pickled_beat)
-            if not beat:
-                raise StatusException("Server Disconnect")
-
-            if pickled_beat['type'] == "set":
-                print(pickled_beat)
-                self.peers = pickled_beat["data"]
-
-            self.auth_socket.send("<3>".encode(self.ENCODE))
-        except StatusException as e:
-            print(e)
-            self.auth_socket.close()
-            exit(1)
+        else:
             return
 
-        threading.Timer(1, self.recv_status).start()
+    def recv_status(self):
 
-    # def recv_set(self):
-    #     try:
-    #         set = self.auth_socket.recv(self.BUFFER)
-    #         pickled_set = pickle.loads(set)
-    #         print(pickled_set)
-    #
-    #     except Exception as e:
-    #         print(e)
-    #         self.auth_socket.close()
-    #         return
-    #     recv_thread = threading.thread(target=self.recv_set)
-    #     recv_thread.start()
+        try:
+            beat = self.auth_socket.recv(self.BUFFER)
+            pickled_beat = pickle.loads(beat)
+            print(pickled_beat)
+            if not beat:
+                raise StatusException("Disconnecting")
+            if pickled_beat['type'] == "set":
+                self.peers = pickled_beat["data"]
+                print(self.auth_peer, "sent a new set", self.peers)
+
+            self.auth_socket.send("<3>".encode(self.ENCODE))
+        except Exception:
+            self.auth_socket.close()
+            self.disconnected = True
+            print("Reached Timeout with Auth Peer")
+            return
+
+        beat_thread = threading.Timer(2, self.recv_status)
+        beat_thread.start()
 
