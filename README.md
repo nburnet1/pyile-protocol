@@ -1,7 +1,7 @@
 <h1 style="text-align:center;">Pyile Protocol Documentation:</h1>
 <h2>Introduction:</h2>
 <p>
-This document describes the network protocol used by the pyile application over TCP on port 4702. 
+This document describes the network protocol used by the pyile application over TCP/IP on port 4702. 
 The protocol is used for communication and authentication between peers.
 </p>
 
