@@ -19,6 +19,8 @@ class Peer:
         self.ENCODE = 'utf-8'
         self.BUFFER = 2048
         self.disconnected = False
+        self.threads = []
+
         self.address = address
         self.auth_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.auth_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -36,14 +38,20 @@ class Peer:
     def handle_peer(self, addr):
         data = addr.recv(self.BUFFER).decode(self.ENCODE)
         print(data)
-        addr.send("got it!".encode(self.ENCODE))
+        addr.send(data.encode(self.ENCODE))
 
     def connect(self):
-        self.peer_socket.listen()
-        print("Listening for connections...")
+        try:
+            self.peer_socket.listen()
+        except:
+            pass
         while not self.disconnected:
-            addr, acc_connect = self.peer_socket.accept()
-            self.handle_peer(addr)
+            try:
+                self.peer_socket.settimeout(2)
+                addr, acc_connect = self.peer_socket.accept()
+                self.handle_peer(addr)
+            except:
+                pass
 
     def broadcast(self, msg):
         for peer in self.peers:
@@ -56,12 +64,16 @@ class Peer:
             return
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as send_sock:
-            send_sock.connect(address)
-            print("sending: ", msg, "to", address)
-            send_sock.send(msg.encode(self.ENCODE))
-            data = send_sock.recv(self.BUFFER).decode(self.ENCODE)
-            print(data)
-            send_sock.close()
+            send_sock.settimeout(1)
+            try:
+                send_sock.connect(address)
+                # print("sending: ", msg, "to", address)
+                send_sock.send(msg.encode(self.ENCODE))
+                data = send_sock.recv(self.BUFFER).decode(self.ENCODE)
+            except Exception:
+                send_sock.close()
+                print("Peer at", address, "is not responding")
+
 
 
     def leave(self):
