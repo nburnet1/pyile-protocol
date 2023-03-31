@@ -24,6 +24,7 @@ def test_auth():
             auth_peer.disconnected = True
             auth_peer.threads.append(auth_thread)
             auth_peer.threads.append(peer_thread)
+            utils.join_threads(auth_peer.threads)
 
         elif data == "peers":
             print(auth_peer.peers)
