@@ -1,6 +1,9 @@
+import sys
 import threading
 
 from lib.peers.AuthPeer import AuthPeer
+from lib.peers.JoinPeer import JoinPeer
+from lib import utils
 
 
 def test_auth():
@@ -15,15 +18,15 @@ def test_auth():
     except:
         print("threads terminated")
 
-    while True:
+    while not auth_peer.disconnected:
         data = input("~: ")
         if data == "exit":
             auth_peer.auth_socket.close()
             auth_peer.peer_socket.close()
             auth_peer.disconnected = True
+            auth_peer.threads.append(auth_thread)
+            auth_peer.threads.append(peer_thread)
 
-
-            return
         elif data == "peers":
             print(auth_peer.peers)
         else:

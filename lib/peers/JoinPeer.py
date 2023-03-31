@@ -78,12 +78,12 @@ class JoinPeer(Peer):
         try:
             beat = self.auth_socket.recv(self.BUFFER)
             pickled_beat = pickle.loads(beat)
-            print(pickled_beat)
+            # print(pickled_beat)
             if not beat:
                 raise StatusException("Disconnecting")
             if pickled_beat['type'] == "set":
                 self.peers = pickled_beat["data"]
-                print(self.auth_peer, "sent a new set", self.peers)
+                print("Auth peer sent a new set", self.peers)
 
             self.auth_socket.send("<3>".encode(self.ENCODE))
         except Exception:
@@ -93,5 +93,6 @@ class JoinPeer(Peer):
             return
 
         beat_thread = threading.Timer(2, self.recv_status)
+        self.threads.append(beat_thread)
         beat_thread.start()
 

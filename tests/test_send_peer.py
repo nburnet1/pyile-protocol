@@ -1,6 +1,8 @@
+import sys
 import threading
 
 from lib.peers.JoinPeer import JoinPeer
+from lib import utils
 from random import randint
 
 
@@ -24,8 +26,9 @@ def test_peer():
         if data == "exit":
             peer.auth_socket.close()
             peer.peer_socket.close()
-            connect_thread.is_stopped = True
             peer.disconnected = True
+            peer.threads.append(connect_thread)
+            utils.join_threads(peer.threads)
 
         elif data == "peers":
             print(peer.peers)

@@ -69,29 +69,32 @@ class AuthPeer(Peer):
 
         self.auth_socket.listen()
 
-        while True:
-            if self.disconnected:
-                return
-            addr, acc_connect = self.auth_socket.accept()
-            print("Got connection from: ", addr.getpeername())
+        while not self.disconnected:
+            self.auth_socket.settimeout(2)
+            try:
+                addr, acc_connect = self.auth_socket.accept()
+                print("Got connection from: ", addr.getpeername())
+
             # self.blocked_peers.add(addr.getpeername())  # Uncomment to test ban.
             # Checks if joining peer in banned
-            if addr.getpeername() not in self.blocked_peers:
-                # Sends not banned status to peer
-                try:
-                    addr.send("notbanned".encode(self.ENCODE))
-                except AuthenticationException:
-                    print("Could not send banned status to peer.")
-                # Performs authentication
-                peer_address = auth_password_check()
-                if peer_address is not None:
-                    self.auth_beat(addr, peer_address)
-                    self.changes_made = True
-                    # self.dist_set(addr, peer_address)
-            else:
-                print(addr.getpeername(), "is banned")
-                addr.send("banned".encode(self.ENCODE))
-                addr.close()
+                if addr.getpeername() not in self.blocked_peers:
+                    # Sends not banned status to peer
+                    try:
+                        addr.send("notbanned".encode(self.ENCODE))
+                    except AuthenticationException:
+                        print("Could not send banned status to peer.")
+                    # Performs authentication
+                    peer_address = auth_password_check()
+                    if peer_address is not None:
+                        self.auth_beat(addr, peer_address)
+                        self.changes_made = True
+                        # self.dist_set(addr, peer_address)
+                else:
+                    print(addr.getpeername(), "is banned")
+                    addr.send("banned".encode(self.ENCODE))
+                    addr.close()
+            except:
+                pass
 
     def auth_beat(self, addr, peer_address):
         """
@@ -118,6 +121,7 @@ class AuthPeer(Peer):
             return
 
         beat_thread = threading.Timer(2, self.auth_beat, args=(addr, peer_address))
+        self.threads.append(beat_thread)
         beat_thread.start()
 
 

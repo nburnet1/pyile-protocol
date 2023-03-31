@@ -19,6 +19,8 @@ class Peer:
         self.ENCODE = 'utf-8'
         self.BUFFER = 2048
         self.disconnected = False
+        self.threads = []
+
         self.address = address
         self.auth_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.auth_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -40,10 +42,13 @@ class Peer:
 
     def connect(self):
         self.peer_socket.listen()
-        # print("Listening for connections...")
         while not self.disconnected:
-            addr, acc_connect = self.peer_socket.accept()
-            self.handle_peer(addr)
+            self.peer_socket.settimeout(2)
+            try:
+                addr, acc_connect = self.peer_socket.accept()
+                self.handle_peer(addr)
+            except:
+                pass
 
     def broadcast(self, msg):
         for peer in self.peers:
