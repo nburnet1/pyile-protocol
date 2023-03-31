@@ -41,10 +41,13 @@ class Peer:
         addr.send(data.encode(self.ENCODE))
 
     def connect(self):
-        self.peer_socket.listen()
+        try:
+            self.peer_socket.listen()
+        except:
+            pass
         while not self.disconnected:
-            self.peer_socket.settimeout(2)
             try:
+                self.peer_socket.settimeout(2)
                 addr, acc_connect = self.peer_socket.accept()
                 self.handle_peer(addr)
             except:
