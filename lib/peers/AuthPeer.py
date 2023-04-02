@@ -20,9 +20,16 @@ class AuthPeer(Peer):
         Allowed attempts that a joining peer is allowed
     password : str
         Password that joining peers must authenticate with
+    blocked_peers : set
+        Set of peers that are banned from joining the network
+    changes_made : bool
+        Boolean to check if changes have been made to the network
+
 
     Methods
     -------
+    __init__(address, password_attempts, password)
+        Constructor for the AuthPeer class
     authenticate_peers()
         The first method that should be called when an authentication peer is created
     """
@@ -37,14 +44,15 @@ class AuthPeer(Peer):
 
     def authenticate_peers(self):
         """
-        The first method that should be called when an authentication peer is created
-        :return:
+        The first method that should be called when an authentication peer is created.
+        Starts a thread to listen for incoming connections, Authenticates peers and calls the
+        heartbeat method.
         """
 
         def auth_password_check():
             """
-
-            :return:
+                Auxiliary function to help authenticate
+            :return: peer address if authenticated, None if not
             """
             try:
                 password = addr.recv(self.BUFFER).decode(self.ENCODE)
@@ -88,7 +96,7 @@ class AuthPeer(Peer):
                     if peer_address is not None:
                         self.auth_beat(addr, peer_address)
                         self.changes_made = True
-                        # self.dist_set(addr, peer_address)
+
                 else:
                     print(addr.getpeername(), "is banned")
                     addr.send("banned".encode(self.ENCODE))
@@ -109,7 +117,6 @@ class AuthPeer(Peer):
                 self.changes_made = False
             else:
                 addr.send(pickle.dumps({"type": "<3", "data": "<3"}))
-            addr.settimeout(10)
             beat = addr.recv(self.BUFFER)
             if not beat:
                 raise ConnectionResetError

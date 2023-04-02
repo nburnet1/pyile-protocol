@@ -1,13 +1,10 @@
-import sys
 import threading
 
 from lib.peers.AuthPeer import AuthPeer
-from lib.peers.JoinPeer import JoinPeer
-from lib import utils
 
 
 def test_auth():
-    auth_peer = AuthPeer(("192.168.1.66", 4702), 1, "password")
+    auth_peer = AuthPeer(address=("192.168.1.66", 4702), password_attempts=1, password="password")
     # auth_peer = AuthPeer(("172.20.100.39", 4702), 1, "password")
     print(auth_peer)
 
@@ -19,13 +16,7 @@ def test_auth():
     while not auth_peer.disconnected:
         data = input("~: ")
         if data == "exit":
-            auth_peer.auth_socket.close()
-            auth_peer.peer_socket.close()
-            auth_peer.disconnected = True
-            auth_peer.threads.append(auth_thread)
-            auth_peer.threads.append(peer_thread)
-            utils.join_threads(auth_peer.threads)
-
+            auth_peer.leave()
         elif data == "peers":
             print(auth_peer.peers)
         else:
