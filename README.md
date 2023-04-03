@@ -79,6 +79,7 @@ The protocol implements an authentication process equipped with a password check
 <h2>Code Example</h2>
 
 <h4>Authenticating Peer</h4>
+
 ```python
 auth_peer = AuthPeer(address=("192.168.1.66", 4702), password_attempts=1, password="password")
 
@@ -96,6 +97,7 @@ while not auth_peer.disconnected:
     else:
         auth_peer.broadcast(data)
 ```
+
 <h4>Peer</h4>
 ```python
 peer = JoinPeer(address=("192.168.1.65", 4702))
