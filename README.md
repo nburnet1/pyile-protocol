@@ -81,6 +81,9 @@ The protocol implements an authentication process equipped with a password check
 <h4>Authenticating Peer</h4>
 
 ```python
+import threading
+from pyile_protocol.lib.peers.AuthPeer import AuthPeer
+
 auth_peer = AuthPeer(address=("192.168.1.66", 4702), password_attempts=1, password="password")
 
 auth_thread = threading.Thread(target=auth_peer.authenticate_peers)
@@ -100,6 +103,8 @@ while not auth_peer.disconnected:
 <h4>Peer</h4>
 
 ```python
+import threading
+from pyile_protocol.lib.peers.JoinPeer import JoinPeer
 peer = JoinPeer(address=("192.168.1.65", 4702))
 peer.get_authenticated(("192.168.1.66", 4702), "password")
 
