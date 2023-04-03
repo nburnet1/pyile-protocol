@@ -44,9 +44,10 @@ This type of peer only can be authenticated and send messages.
 * If a timeout is reached on either sides, the peer will be removed from the list of established peers and must reauthenticate.
 
 <h4>Exit</h4>
+
 * Any time an exit is called by a peer, the instance variable <i>disconnected</i> will be set to True. All sockets will be closed and any loose threads will be joined.
 
-
+<div></div>
 <img src="https://www.burnette.tech/img/Pyile.png"/>
 <h5><i>Figure 1</i></h5>
 
