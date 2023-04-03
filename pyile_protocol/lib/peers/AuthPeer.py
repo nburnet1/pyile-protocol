@@ -1,8 +1,8 @@
 import pickle
 import threading
 
-from lib.peers.Peer import Peer
-from lib.error import *
+from pyile_protocol.lib.peers.Peer import Peer
+from pyile_protocol.lib.error import *
 
 
 class AuthPeer(Peer):

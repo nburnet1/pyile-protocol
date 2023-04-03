@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='pyile-protocol',
+    name='pyile_protocol',
     version='0.0.1',
     description='Protocol library for p2p messaging and authentication.',
     long_description=open('README.md').read(),
@@ -10,7 +10,7 @@ setup(
     author_email='nburnet1@duck.com',
     packages=find_packages(),
     install_requires=[
-        "pyile-protocol",
+        "pyile_protocol",
 
     ],
     url='https://github.com/nburnet1/pyile-protocol'

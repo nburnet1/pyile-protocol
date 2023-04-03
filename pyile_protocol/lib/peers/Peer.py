@@ -1,10 +1,9 @@
-import pickle
 import random
 import socket
 
 
 from pyile_protocol.lib import utils
-from lib.error import *
+from pyile_protocol.lib.error import *
 
 
 class Peer:

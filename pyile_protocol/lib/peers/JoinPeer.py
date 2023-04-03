@@ -1,10 +1,8 @@
 import pickle
-import random
-import socket
 import threading
 
-from lib.peers.Peer import Peer
-from lib.error import *
+from pyile_protocol.lib.peers.Peer import Peer
+from pyile_protocol.lib.error import *
 
 
 class JoinPeer(Peer):

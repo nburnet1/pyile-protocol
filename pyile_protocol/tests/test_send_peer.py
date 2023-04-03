@@ -1,7 +1,6 @@
 import threading
 
 from lib.peers.JoinPeer import JoinPeer
-from lib import utils
 from random import randint
 
 
