@@ -78,6 +78,12 @@ The protocol implements an authentication process equipped with a password check
 
 <h2>Code Example</h2>
 
+<h4>Install</h4>
+
+```
+pip install pyile_protocol
+```
+
 <h4>Authenticating Peer</h4>
 
 ```python
