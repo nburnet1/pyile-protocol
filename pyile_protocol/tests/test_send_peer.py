@@ -1,6 +1,6 @@
 import threading
 
-from lib.peers.JoinPeer import JoinPeer
+from pyile_protocol.lib.peers.JoinPeer import JoinPeer
 from random import randint
 
 

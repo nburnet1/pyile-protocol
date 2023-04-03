@@ -1,6 +1,6 @@
 import threading
 
-from lib.peers.AuthPeer import AuthPeer
+from pyile_protocol.lib.peers.AuthPeer import AuthPeer
 
 
 def test_auth():
