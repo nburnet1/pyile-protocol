@@ -97,8 +97,8 @@ while not auth_peer.disconnected:
     else:
         auth_peer.broadcast(data)
 ```
-
 <h4>Peer</h4>
+
 ```python
 peer = JoinPeer(address=("192.168.1.65", 4702))
 peer.get_authenticated(("192.168.1.66", 4702), "password")
