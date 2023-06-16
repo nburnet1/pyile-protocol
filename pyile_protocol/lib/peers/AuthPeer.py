@@ -1,5 +1,6 @@
 import pickle
 import threading
+import time
 
 from pyile_protocol.lib.peers.Peer import Peer
 from pyile_protocol.lib.error import *
@@ -94,8 +95,11 @@ class AuthPeer(Peer):
                     # Performs authentication
                     peer_address = auth_password_check()
                     if peer_address is not None:
-                        self.auth_beat(addr, peer_address)
+                        auth_thread = threading.Thread(target=self.auth_beat, args=(addr, peer_address))
+                        auth_thread.start()
                         self.changes_made = True
+                        # self.auth_beat(addr, peer_address)
+
 
                 else:
                     print(addr.getpeername(), "is banned")
@@ -109,26 +113,21 @@ class AuthPeer(Peer):
         Sends a heartbeat to the peer to check if it is still connected
         :return:
         """
-        if self.disconnected:
-            return
-        try:
-            if self.changes_made:
-                addr.send(pickle.dumps({"type": "set", "data": self.peers}))
-                self.changes_made = False
-            else:
-                addr.send(pickle.dumps({"type": "<3", "data": "<3"}))
-            beat = addr.recv(self.BUFFER)
-            if not beat:
-                raise ConnectionResetError
-        except ConnectionResetError:
-            print("Peer disconnected")
-            self.peers.remove(peer_address)
-            print(self.peers)
-            self.changes_made = True
-            return
+        while not self.disconnected:
 
-        beat_thread = threading.Timer(2, self.auth_beat, args=(addr, peer_address))
-        self.threads.append(beat_thread)
-        beat_thread.start()
-
-
+            try:
+                if self.changes_made:
+                    addr.send(pickle.dumps({"type": "set", "data": self.peers}))
+                    self.changes_made = False
+                else:
+                    addr.send(pickle.dumps({"type": "<3", "data": "<3"}))
+                beat = addr.recv(self.BUFFER)
+                if not beat:
+                    raise ConnectionResetError
+            except ConnectionResetError:
+                print("Peer disconnected")
+                self.peers.remove(peer_address)
+                print(self.peers)
+                self.changes_made = True
+                return
+            time.sleep(1)

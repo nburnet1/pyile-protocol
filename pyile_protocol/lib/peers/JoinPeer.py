@@ -1,5 +1,6 @@
 import pickle
 import threading
+import time
 
 from pyile_protocol.lib.peers.Peer import Peer
 from pyile_protocol.lib.error import *
@@ -88,7 +89,9 @@ class JoinPeer(Peer):
         # Performs password check
         authenticated = password_check()
         if authenticated:
-            self.recv_status()
+            recv_thread = threading.Thread(target=self.recv_status)
+            recv_thread.start()
+            # self.recv_status()
         return authenticated
 
 
@@ -99,31 +102,28 @@ class JoinPeer(Peer):
         :return:
 
         """
-
-        try:
-            beat = self.auth_socket.recv(self.BUFFER)
-            pickled_beat = pickle.loads(beat)
-            if not beat:
-                raise StatusException("Did not receive a heartbeat, Disconnecting")
-            if pickled_beat['type'] == "set":
-                self.peers = pickled_beat["data"]
-                print("Auth peer sent a new set", self.peers)
+        while True:
             try:
-                self.auth_socket.send("<3>".encode(self.ENCODE))
-            except SendException:
-                print("Could not send heartbeat to auth peer")
+                beat = self.auth_socket.recv(self.BUFFER)
+                pickled_beat = pickle.loads(beat)
+                print(pickled_beat)
+                if not beat:
+                    raise StatusException("Did not receive a heartbeat, Disconnecting")
+                if pickled_beat['type'] == "set":
+                    self.peers = pickled_beat["data"]
+                    print("Auth peer sent a new set", self.peers)
+                try:
+                    self.auth_socket.send("<3>".encode(self.ENCODE))
+                except SendException:
+                    print("Could not send heartbeat to auth peer")
+                    self.auth_socket.close()
+                    self.disconnected = True
+                    return
+
+            except Exception:
+                print("Disconnected from Auth Peer...")
                 self.auth_socket.close()
                 self.disconnected = True
                 return
+            time.sleep(1)
 
-        except Exception:
-            print("Disconnected from Auth Peer...")
-            self.auth_socket.close()
-            self.disconnected = True
-            return
-        try:
-            beat_thread = threading.Timer(2, self.recv_status)
-            self.threads.append(beat_thread)
-            beat_thread.start()
-        except threading.ThreadError:
-            print("Could not start heartbeat thread")

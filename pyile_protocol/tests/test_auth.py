@@ -4,7 +4,7 @@ from pyile_protocol.lib.peers.AuthPeer import AuthPeer
 
 
 def test_auth():
-    auth_peer = AuthPeer(address=("192.168.1.66", 4702), password_attempts=1, password="password")
+    auth_peer = AuthPeer(address=("172.20.101.26", 4702), password_attempts=1, password="password")
     # auth_peer = AuthPeer(("172.20.100.39", 4702), 1, "password")
     print(auth_peer)
 

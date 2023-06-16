@@ -97,7 +97,7 @@ class Peer:
 
     def connect(self):
         """
-        connect() is threaded method that lists for incoming peer connections
+        connect() is threaded method that listens for incoming peer connections
         that have already been authenticated
 
         Returns
