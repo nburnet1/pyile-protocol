@@ -1,6 +1,7 @@
 import pickle
 import threading
 import time
+import json
 
 from pyile_protocol.lib.peers.Peer import Peer
 from pyile_protocol.lib.error import *
@@ -47,7 +48,7 @@ class JoinPeer(Peer):
 
             """
             try:
-                self.auth_socket.send(password.encode(self.ENCODE))
+                self.auth_socket.send(json.dumps({"shadow": password}).encode(self.ENCODE))
                 pw_status = self.auth_socket.recv(self.BUFFER).decode(self.ENCODE)
                 if pw_status == "authenticated":
                     print(str(password) + " is correct")
@@ -125,5 +126,5 @@ class JoinPeer(Peer):
                 self.auth_socket.close()
                 self.disconnected = True
                 return
-            time.sleep(1)
+            time.sleep(2)
 

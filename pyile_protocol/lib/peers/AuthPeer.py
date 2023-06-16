@@ -1,6 +1,7 @@
 import pickle
 import threading
 import time
+import json
 
 from pyile_protocol.lib.peers.Peer import Peer
 from pyile_protocol.lib.error import *
@@ -58,7 +59,7 @@ class AuthPeer(Peer):
             try:
                 password = addr.recv(self.BUFFER).decode(self.ENCODE)
                 print(addr.getpeername(), "Trying to login with password:", password)
-                if password == self.password:
+                if json.loads(password)["shadow"] == self.password:
                     # Sends authenticated status to peer
                     addr.send("authenticated".encode(self.ENCODE))
                     # Receives peer address from peer
@@ -130,4 +131,4 @@ class AuthPeer(Peer):
                 print(self.peers)
                 self.changes_made = True
                 return
-            time.sleep(1)
+            time.sleep(2)

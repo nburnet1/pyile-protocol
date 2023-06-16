@@ -2,8 +2,20 @@ import random
 import socket
 
 
+
+
 from pyile_protocol.lib import utils
 from pyile_protocol.lib.error import *
+
+
+def msg_pass(msg):
+        if msg == "":
+            return False
+        elif msg == "\n":
+            return False
+        elif msg == " ":
+            return False
+        return True
 
 
 class Peer:
@@ -68,11 +80,11 @@ class Peer:
         self.address = address
         self.auth_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.auth_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.auth_socket.settimeout(2)
+        self.auth_socket.settimeout(4)
         self.auth_socket.bind(self.address)
         self.peer_address =(self.address[0], 49000 + random.randint(0, 1000))
         self.peer_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.peer_socket.settimeout(2)
+        self.peer_socket.settimeout(4)
         self.peer_socket.bind(self.peer_address)
         self.peers = []
 
@@ -127,9 +139,10 @@ class Peer:
         -------
 
         """
-        for peer in self.peers:
-            if peer != self.peer_address:
-                self.send(peer, msg)
+        if msg_pass(msg):
+            for peer in self.peers:
+                if peer != self.peer_address:
+                    self.send(peer, msg)
 
     def send(self, address, msg):
         if address == self.peer_address:
@@ -151,7 +164,7 @@ class Peer:
 
     def leave(self):
         """
-        Leaves the network and closes all sockets along with joining all threads.
+        Leaves the network
 
         Returns
         -------
@@ -160,5 +173,4 @@ class Peer:
         self.auth_socket.close()
         self.peer_socket.close()
         self.disconnected = True
-        utils.join_threads(self.threads)
 
