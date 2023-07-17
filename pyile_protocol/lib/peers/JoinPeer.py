@@ -1,9 +1,8 @@
-import pickle
 import threading
 import time
-import json
 
 from pyile_protocol.lib.peers.Peer import Peer
+from pyile_protocol.lib.utils import *
 from pyile_protocol.lib.error import *
 
 
@@ -31,6 +30,34 @@ class JoinPeer(Peer):
         Peer.__init__(self, address=address)
         self.auth_peer = None
 
+    def _password_check(self, password, starting_address):
+        """
+        Helper function that checks the password.
+
+        :return: True if authenticated
+
+        """
+        try:
+            self.auth_socket.send(send_json({"shadow": password}))
+            pw_status = recv_json(self.auth_socket.recv(self.BUFFER))
+            if pw_status["authenticated"]:
+                print(str(password) + " is correct")
+                # adding auth peer
+                self.auth_peer = starting_address
+                # sends new socket to auth peer
+                self.auth_socket.send(send_json({"peer address": self.peer_address}))
+                # receives peers from auth peer
+                recv_peers = recv_json(self.auth_socket.recv(self.BUFFER))
+                self.peers = to_tuple(recv_peers["distro"])
+                # print("Received peers from auth: ", self.peers)
+                return True
+            elif not pw_status["authenticated"]:
+                raise AuthenticationException("Password is incorrect")
+        except AuthenticationException as e:
+            print(e)
+            self.leave()
+            return False
+
     def get_authenticated(self, starting_address, password):
         """
         The first method that should be called when a peer is created.
@@ -40,36 +67,6 @@ class JoinPeer(Peer):
         :return: True if authenticated, False if not
         """
 
-        def password_check():
-            """
-            Helper function that checks the password.
-
-            :return: True if authenticated, False if not
-
-            """
-            try:
-                self.auth_socket.send(json.dumps({"shadow": password}).encode(self.ENCODE))
-                pw_status = self.auth_socket.recv(self.BUFFER).decode(self.ENCODE)
-                if pw_status == "authenticated":
-                    print(str(password) + " is correct")
-                    # adding auth peer
-                    self.auth_peer = starting_address
-                    # sends new socket to auth peer
-                    pickled_socket = pickle.dumps(self.peer_address)
-                    self.auth_socket.send(pickled_socket)
-                    # receives peers from auth peer
-                    recv_peers = self.auth_socket.recv(self.BUFFER)
-                    self.peers = pickle.loads(recv_peers)
-                    # print("Received peers from auth: ", self.peers)
-                    return True
-                elif pw_status == "notauthenticated":
-                    raise AuthenticationException("Password is incorrect")
-            except AuthenticationException as e:
-                print(e)
-                self.auth_socket.close()
-                self.peer_socket.close()
-                return False
-
         # Connect to initial peer
         try:
             self.auth_socket.connect(starting_address)
@@ -78,23 +75,51 @@ class JoinPeer(Peer):
 
         # Receive banned status from initial peer
         try:
-            banned = self.auth_socket.recv(self.BUFFER).decode(self.ENCODE)
+            recv_banned = self.auth_socket.recv(self.BUFFER)
+            banned = recv_json(recv_banned)
             print(banned)
-            if banned == "banned":
+            if banned["banned"]:
                 raise AuthenticationException("You are banned from this network")
         except AuthenticationException as e:
             print(e)
-            self.auth_socket.close()
+            self.leave()
             return
-
         # Performs password check
-        authenticated = password_check()
+        authenticated = self._password_check(password, starting_address)
         if authenticated:
+            dist_response = recv_json(self.auth_socket.recv(self.BUFFER))
+            print("auth_dist_addr:", tuple(dist_response["dist addr"]))
+            try:
+                self.dist_socket.connect(tuple(dist_response["dist addr"]))
+            except ConnectionException as e:
+                print("could not connect to:", tuple(dist_response["dist addr"]))
+                self.dist_socket.close()
             recv_thread = threading.Thread(target=self.recv_status)
-            recv_thread.start()
-            # self.recv_status()
+            dist_thread = threading.Thread(target=self.recv_dist)
+            try:
+                dist_thread.start()
+            except ThreadException:
+                pass
+            try:
+                recv_thread.start()
+            except ThreadException:
+                pass
+
         return authenticated
 
+    def recv_dist(self):
+        while not self.disconnected:
+            try:
+                beat = self.dist_socket.recv(self.BUFFER * 10)
+                print("dist beat", beat)
+                if beat:
+                    json_beat = recv_json(beat)
+                    if "distro" in json_beat:
+                        self.peers = to_tuple(json_beat["distro"])
+                        print("Auth peer sent a new set", self.peers)
+            except:
+                pass
+        self.leave()
 
     def recv_status(self):
         """
@@ -103,28 +128,17 @@ class JoinPeer(Peer):
         :return:
 
         """
-        while True:
+        while not self.disconnected:
             try:
-                beat = self.auth_socket.recv(self.BUFFER)
-                pickled_beat = pickle.loads(beat)
-                print(pickled_beat)
-                if not beat:
-                    raise StatusException("Did not receive a heartbeat, Disconnecting")
-                if pickled_beat['type'] == "set":
-                    self.peers = pickled_beat["data"]
-                    print("Auth peer sent a new set", self.peers)
-                try:
-                    self.auth_socket.send("<3>".encode(self.ENCODE))
-                except SendException:
-                    print("Could not send heartbeat to auth peer")
-                    self.auth_socket.close()
-                    self.disconnected = True
-                    return
-
-            except Exception:
-                print("Disconnected from Auth Peer...")
-                self.auth_socket.close()
-                self.disconnected = True
+                self.auth_socket.recv(self.BUFFER)
+            except Exception as e:
+                print("recv status: ")
+                self.leave()
+            try:
+                self.auth_socket.send(send_json({"<3": True}))
+            except Exception as e:
+                print("Could not send heartbeat to auth peer")
+                self.leave()
                 return
-            time.sleep(2)
 
+            time.sleep(2)

@@ -19,6 +19,7 @@ def test_peer():
 
     try:
         connect_thread = threading.Thread(target=peer.connect)
+        peer.threads.append(connect_thread)
         connect_thread.start()
     except:
         print("threads terminated")
@@ -27,7 +28,6 @@ def test_peer():
         data = input("~: ")
         if data == "exit":
             peer.leave()
-
         elif data == "peers":
             print(peer.peers)
         else:

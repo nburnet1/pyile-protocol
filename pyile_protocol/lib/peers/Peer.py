@@ -1,10 +1,8 @@
 import random
 import socket
+import time
 
-
-
-
-from pyile_protocol.lib import utils
+from pyile_protocol.lib.utils import *
 from pyile_protocol.lib.error import *
 
 
@@ -73,7 +71,6 @@ class Peer:
         if type(self) == Peer:
             raise TypeError("Peer cannot be directly instantiated")
 
-        self.ENCODE = 'utf-8'
         self.BUFFER = 2048
         self.disconnected = False
         self.threads = []
@@ -82,7 +79,12 @@ class Peer:
         self.auth_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.auth_socket.settimeout(4)
         self.auth_socket.bind(self.address)
-        self.peer_address =(self.address[0], 49000 + random.randint(0, 1000))
+        self.dist_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.dist_address = (self.address[0], 50000 + random.randint(0, 1000))
+        self.dist_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.dist_socket.settimeout(4)
+        self.dist_socket.bind(self.dist_address)
+        self.peer_address = (self.address[0], 49000 + random.randint(0, 1000))
         self.peer_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.peer_socket.settimeout(4)
         self.peer_socket.bind(self.peer_address)
@@ -103,9 +105,9 @@ class Peer:
         -------
 
         """
-        data = addr.recv(self.BUFFER).decode(self.ENCODE)
+        data = recv_json(addr.recv(self.BUFFER))
         print(data)
-        addr.send(data.encode(self.ENCODE))
+        addr.send(send_json({"msg": data}))
 
     def connect(self):
         """
@@ -123,7 +125,10 @@ class Peer:
         while not self.disconnected:
             try:
                 addr, acc_connect = self.peer_socket.accept()
-                self.handle_peer(addr)
+                print(addr.getpeername()[0])
+                for peer in self.peers:
+                    if peer[0] == addr.getpeername()[0]:
+                        self.handle_peer(addr)
             except:
                 pass
 
@@ -148,19 +153,17 @@ class Peer:
         if address == self.peer_address:
             print("Cannot send to self")
             return
-
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as send_sock:
             send_sock.settimeout(2)
             try:
                 send_sock.connect(address)
                 # print("sending: ", msg, "to", address)
-                send_sock.send(msg.encode(self.ENCODE))
-                data = send_sock.recv(self.BUFFER).decode(self.ENCODE)
+                send_sock.send(send_json({"msg": msg}))
+                data = send_sock.recv(self.BUFFER)
+                data_json = recv_json(data)
             except Exception:
                 send_sock.close()
                 print("Peer at", address, "is not responding")
-
-
 
     def leave(self):
         """
@@ -170,7 +173,11 @@ class Peer:
         -------
 
         """
-        self.auth_socket.close()
-        self.peer_socket.close()
+        if type(self.auth_socket) == socket.socket:
+            self.auth_socket.close()
+        if type(self.peer_socket) == socket.socket:
+            self.peer_socket.close()
+        if type(self.dist_socket) == socket.socket:
+            self.dist_socket.close()
+        # join_threads(self.threads)
         self.disconnected = True
-

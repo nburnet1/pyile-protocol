@@ -19,5 +19,9 @@ def test_auth():
             auth_peer.leave()
         elif data == "peers":
             print(auth_peer.peers)
+        elif data == "auth":
+            print(auth_peer.connected_addrs)
+        elif data == "dist":
+            print(auth_peer.dist_sockets)
         else:
             auth_peer.broadcast(data)
