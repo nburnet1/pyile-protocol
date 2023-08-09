@@ -48,7 +48,7 @@ This type of peer only can be authenticated and send messages.
 * Any time an exit is called by a peer, the instance variable <i>disconnected</i> will be set to True. All sockets will be closed and any loose threads will be joined.
 
 <div></div>
-<img src="https://www.burnette.tech/img/Pyile.png"/>
+<img src="https://www.burnette.tech/Pyile.png"/>
 <h5><i>Figure 1</i></h5>
 
 <h3>Message Types</h3>
