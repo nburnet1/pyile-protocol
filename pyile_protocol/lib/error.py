@@ -17,9 +17,11 @@ class RecvException(Exception):
     def __init__(self, message):
         super().__init__(message)
 
+
 class ConnectionException(Exception):
     def __init__(self, message):
         super().__init__(message)
+
 
 class ThreadException(Exception):
     def __init__(self, message):

@@ -1,19 +1,17 @@
 import random
 import socket
-import time
 
 from pyile_protocol.lib.utils import *
-from pyile_protocol.lib.error import *
 
 
 def msg_pass(msg):
-        if msg == "":
-            return False
-        elif msg == "\n":
-            return False
-        elif msg == " ":
-            return False
-        return True
+    if msg == "":
+        return False
+    elif msg == "\n":
+        return False
+    elif msg == " ":
+        return False
+    return True
 
 
 class Peer:
@@ -43,7 +41,6 @@ class Peer:
         The socket used to communicate with other non-initial peers
     peers : list
         A list of all the peers in the network
-
 
     Methods
     -------
