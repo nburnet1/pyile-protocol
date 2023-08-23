@@ -1,7 +1,9 @@
 import random
 import socket
+import threading
 
 from pyile_protocol.lib.utils import *
+from pyile_protocol.lib.messenger.Messenger import Messenger
 
 
 def msg_pass(msg):
@@ -64,7 +66,7 @@ class Peer:
 
     """
 
-    def __init__(self, address):
+    def __init__(self, address, messenger):
         if type(self) == Peer:
             raise TypeError("Peer cannot be directly instantiated")
 
@@ -86,6 +88,7 @@ class Peer:
         self.peer_socket.settimeout(4)
         self.peer_socket.bind(self.peer_address)
         self.peers = []
+        self.messenger = messenger
 
     def __str__(self):
         return f"Peer at {self.address}"
@@ -104,6 +107,7 @@ class Peer:
         """
         data = recv_json(addr.recv(self.BUFFER))
         print(data)
+        self.messenger.add_message(data)
         addr.send(send_json({"msg": data}))
 
     def connect(self):
@@ -122,7 +126,7 @@ class Peer:
         while not self.disconnected:
             try:
                 addr, acc_connect = self.peer_socket.accept()
-                print(addr.getpeername()[0])
+                # print(addr.getpeername()[0])
                 for peer in self.peers:
                     if peer[0] == addr.getpeername()[0]:
                         self.handle_peer(addr)
@@ -148,6 +152,7 @@ class Peer:
 
     def send(self, address, msg):
         if address == self.peer_address:
+            self.messenger.add_warning("Cannot send to self")
             print("Cannot send to self")
             return
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as send_sock:
@@ -160,6 +165,7 @@ class Peer:
                 data_json = recv_json(data)
             except Exception:
                 send_sock.close()
+                self.messenger.add_info("Peer at " + address + " is not responding")
                 print("Peer at", address, "is not responding")
 
     def leave(self):

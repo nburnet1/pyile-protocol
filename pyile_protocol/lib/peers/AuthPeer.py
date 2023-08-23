@@ -35,8 +35,8 @@ class AuthPeer(Peer):
         The first method that should be called when an authentication peer is created
     """
 
-    def __init__(self, address, password_attempts, password):
-        Peer.__init__(self, address=address)
+    def __init__(self, address, password_attempts, password, messenger):
+        Peer.__init__(self, address=address, messenger=messenger)
         self.password_attempts = password_attempts
         self.peers.append(self.peer_address)
         self.blocked_peers = set()
