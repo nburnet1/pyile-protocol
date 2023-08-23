@@ -23,5 +23,7 @@ def test_auth():
             print(auth_peer.connected_addrs)
         elif data == "dist":
             print(auth_peer.dist_sockets)
+        elif data == "threads":
+            print(threading.active_count())
         else:
             auth_peer.broadcast(data)

@@ -98,10 +98,12 @@ class JoinPeer(Peer):
             dist_thread = threading.Thread(target=self.recv_dist)
             try:
                 dist_thread.start()
+
             except ThreadException:
                 pass
             try:
                 recv_thread.start()
+
             except ThreadException:
                 pass
 
@@ -111,7 +113,6 @@ class JoinPeer(Peer):
         while not self.disconnected:
             try:
                 beat = self.dist_socket.recv(self.BUFFER * 10)
-                print("dist beat", beat)
                 if beat:
                     json_beat = recv_json(beat)
                     if "distro" in json_beat:
@@ -132,7 +133,7 @@ class JoinPeer(Peer):
             try:
                 self.auth_socket.recv(self.BUFFER)
             except Exception as e:
-                print("recv status: ")
+                print("recv status:", e)
                 self.leave()
             try:
                 self.auth_socket.send(send_json({"<3": True}))

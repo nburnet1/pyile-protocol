@@ -176,5 +176,5 @@ class Peer:
             self.peer_socket.close()
         if type(self.dist_socket) == socket.socket:
             self.dist_socket.close()
-        # join_threads(self.threads)
+        join_threads(self.threads)
         self.disconnected = True

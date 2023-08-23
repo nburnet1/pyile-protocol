@@ -86,6 +86,7 @@ class AuthPeer(Peer):
         distribute_thread = threading.Thread(target=self.auth_distribute)
         self.dist_socket.listen()
         distribute_thread.start()
+
         self.auth_socket.listen()
 
         while not self.disconnected:
@@ -101,7 +102,6 @@ class AuthPeer(Peer):
                         banned = send_json({"banned": False})
                         print("Sent Banned status", banned)
                         addr.send(banned)
-
                     except AuthenticationException:
                         print("Could not send banned status to peer.")
                     # Performs authentication
@@ -115,7 +115,6 @@ class AuthPeer(Peer):
                         self.connected_addrs.append(addr)
                         # print("dist addr: ", dist_addr)
                         auth_thread = threading.Thread(target=self.auth_beat, args=(addr, peer_address, dist_connected))
-
                         auth_thread.start()
                         self.changes_made = True
 

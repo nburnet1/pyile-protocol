@@ -30,5 +30,7 @@ def test_peer():
             peer.leave()
         elif data == "peers":
             print(peer.peers)
+        elif data == "threads":
+            print(threading.active_count())
         else:
             peer.broadcast(data)
