@@ -1,10 +1,12 @@
 import threading
 
 from pyile_protocol.lib.peers.AuthPeer import AuthPeer
+from pyile_protocol.lib.messenger.Messenger import Messenger
 
 
 def test_auth():
-    auth_peer = AuthPeer(address=("172.20.101.26", 4702), password_attempts=1, password="password")
+    messenger = Messenger()
+    auth_peer = AuthPeer(address=("172.20.101.26", 4702), password_attempts=2, password="password", messenger=messenger, alias="admin")
     # auth_peer = AuthPeer(("172.20.100.39", 4702), 1, "password")
     print(auth_peer)
 
@@ -23,5 +25,15 @@ def test_auth():
             print(auth_peer.connected_addrs)
         elif data == "dist":
             print(auth_peer.dist_sockets)
+        elif data == "threads":
+            print(threading.active_count())
+        elif data == "check":
+            print(messenger.get_messages())
+        elif data == "limbo":
+            print(auth_peer.limbo_peers)
+        elif data == "banned":
+            print(auth_peer.blocked_peers)
+        elif data == "log":
+            print(auth_peer.messenger.seq_list)
         else:
             auth_peer.broadcast(data)

@@ -1,19 +1,19 @@
 import random
 import socket
-import time
+import threading
 
 from pyile_protocol.lib.utils import *
-from pyile_protocol.lib.error import *
+from pyile_protocol.lib.messenger.Messenger import Messenger
 
 
-def msg_pass(msg):
-        if msg == "":
-            return False
-        elif msg == "\n":
-            return False
-        elif msg == " ":
-            return False
-        return True
+def msg_pass(data):
+    if data == "":
+        return False
+    elif data == "\n":
+        return False
+    elif data == " ":
+        return False
+    return True
 
 
 class Peer:
@@ -44,7 +44,6 @@ class Peer:
     peers : list
         A list of all the peers in the network
 
-
     Methods
     -------
     __init__(address)
@@ -56,9 +55,9 @@ class Peer:
     connect()
         connect() is threaded method that lists for incoming peer connections
         that have already been authenticated
-    broadcast(msg)
+    broadcast(data)
         Broadcasts a message to all peers in the network.
-    send(address, msg)
+    send(address, data)
         Sends a message to a specific peer
     leave()
         Leaves the network and closes all sockets along with joining all threads.
@@ -67,28 +66,34 @@ class Peer:
 
     """
 
-    def __init__(self, address):
+    def __init__(self, address, messenger, alias):
         if type(self) == Peer:
             raise TypeError("Peer cannot be directly instantiated")
 
         self.BUFFER = 2048
         self.disconnected = False
         self.threads = []
+
         self.address = address
         self.auth_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.auth_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.auth_socket.settimeout(4)
         self.auth_socket.bind(self.address)
-        self.dist_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
         self.dist_address = (self.address[0], 50000 + random.randint(0, 1000))
+        self.dist_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.dist_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.dist_socket.settimeout(4)
         self.dist_socket.bind(self.dist_address)
+
         self.peer_address = (self.address[0], 49000 + random.randint(0, 1000))
         self.peer_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.peer_socket.settimeout(4)
         self.peer_socket.bind(self.peer_address)
+
         self.peers = []
+        self.alias = alias
+        self.messenger = messenger
 
     def __str__(self):
         return f"Peer at {self.address}"
@@ -106,8 +111,12 @@ class Peer:
 
         """
         data = recv_json(addr.recv(self.BUFFER))
-        print(data)
-        addr.send(send_json({"msg": data}))
+        data["address"] = addr.getpeername()[0]
+        self.messenger.add_message(data)
+        addr.send(send_json({
+            "data": data,
+            "alias": self.alias
+        }))
 
     def connect(self):
         """
@@ -125,45 +134,44 @@ class Peer:
         while not self.disconnected:
             try:
                 addr, acc_connect = self.peer_socket.accept()
-                print(addr.getpeername()[0])
                 for peer in self.peers:
                     if peer[0] == addr.getpeername()[0]:
                         self.handle_peer(addr)
             except:
                 pass
 
-    def broadcast(self, msg):
+    def broadcast(self, data):
         """
         Broadcasts a message to all peers in the network.
 
         Parameters
         ----------
-        msg
+        data
 
         Returns
         -------
 
         """
-        if msg_pass(msg):
+        if msg_pass(data):
             for peer in self.peers:
                 if peer != self.peer_address:
-                    self.send(peer, msg)
+                    self.send(peer, data)
 
-    def send(self, address, msg):
+    def send(self, address, data):
         if address == self.peer_address:
-            print("Cannot send to self")
+            self.messenger.add_warning("Cannot send to self")
             return
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as send_sock:
             send_sock.settimeout(2)
             try:
                 send_sock.connect(address)
-                # print("sending: ", msg, "to", address)
-                send_sock.send(send_json({"msg": msg}))
-                data = send_sock.recv(self.BUFFER)
-                data_json = recv_json(data)
-            except Exception:
+                send_sock.send(send_json({
+                    "data": data,
+                    "alias": self.alias
+                }))
+            except Exception as e:
                 send_sock.close()
-                print("Peer at", address, "is not responding")
+                self.messenger.add_info("Peer at " + address + " is not responding: " + str(e))
 
     def leave(self):
         """
@@ -179,5 +187,5 @@ class Peer:
             self.peer_socket.close()
         if type(self.dist_socket) == socket.socket:
             self.dist_socket.close()
-        # join_threads(self.threads)
+        join_threads(self.threads)
         self.disconnected = True
