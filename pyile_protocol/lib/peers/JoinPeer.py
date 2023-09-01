@@ -26,8 +26,8 @@ class JoinPeer(Peer):
         Establishes and maintains a heart beat from the auth peer.
     """
 
-    def __init__(self, address, messenger):
-        Peer.__init__(self, address=address, messenger=messenger)
+    def __init__(self, address, messenger, alias):
+        Peer.__init__(self, address=address, messenger=messenger, alias=alias)
         self.auth_peer = None
 
     def _password_check(self, password, starting_address):
@@ -42,21 +42,18 @@ class JoinPeer(Peer):
             pw_status = recv_json(self.auth_socket.recv(self.BUFFER))
             if pw_status["authenticated"]:
                 self.messenger.add_info("Password is correct")
-                print(str(password) + " is correct")
                 # adding auth peer
                 self.auth_peer = starting_address
                 # sends new socket to auth peer
-                self.auth_socket.send(send_json({"peer address": self.peer_address}))
+                self.auth_socket.send(send_json({"peer_address": self.peer_address}))
                 # receives peers from auth peer
                 recv_peers = recv_json(self.auth_socket.recv(self.BUFFER))
                 self.peers = to_tuple(recv_peers["distro"])
-                # print("Received peers from auth: ", self.peers)
                 return True
             elif not pw_status["authenticated"]:
                 raise AuthenticationException("Password is incorrect")
         except AuthenticationException as e:
             self.messenger.add_warning(e)
-            print(e)
             self.leave()
             return False
 
@@ -80,25 +77,21 @@ class JoinPeer(Peer):
             recv_banned = self.auth_socket.recv(self.BUFFER)
             banned = recv_json(recv_banned)
             self.messenger.add_info("Banned Status: " + str(banned["banned"]))
-            print(banned)
             if banned["banned"]:
                 raise AuthenticationException("You are banned from this network")
         except AuthenticationException as e:
             self.messenger.add_error(e)
-            print(e)
             self.leave()
             return
         # Performs password check
         authenticated = self._password_check(password, starting_address)
         if authenticated:
             dist_response = recv_json(self.auth_socket.recv(self.BUFFER))
-            self.messenger.add_info("auth_dist_addr: " + str(tuple(dist_response["dist addr"])))
-            print("auth_dist_addr:", tuple(dist_response["dist addr"]))
+            self.messenger.add_info("auth_dist_addr: " + str(tuple(dist_response["dist_addr"])))
             try:
-                self.dist_socket.connect(tuple(dist_response["dist addr"]))
+                self.dist_socket.connect(tuple(dist_response["dist_addr"]))
             except ConnectionException as e:
-                self.messenger.error("could not connect to: " + str(tuple(dist_response["dist addr"])))
-                print("could not connect to:", tuple(dist_response["dist addr"]))
+                self.messenger.error("could not connect to: " + str(tuple(dist_response["dist_addr"])) + ": " + str(e))
                 self.dist_socket.close()
             recv_thread = threading.Thread(target=self.recv_status)
             dist_thread = threading.Thread(target=self.recv_dist)
@@ -123,8 +116,7 @@ class JoinPeer(Peer):
                     json_beat = recv_json(beat)
                     if "distro" in json_beat:
                         self.peers = to_tuple(json_beat["distro"])
-                        print("Auth peer sent a new set: " + str(self.peers))
-                        print("Auth peer sent a new set", self.peers)
+                        self.messenger.add_info("Auth peer sent a new set: " + str(self.peers))
             except:
                 pass
         self.leave()
@@ -140,13 +132,12 @@ class JoinPeer(Peer):
             try:
                 self.auth_socket.recv(self.BUFFER)
             except Exception as e:
-                self.messenger.add_error("Could not receive heartbeat from auth peer")
+                self.messenger.add_error("Could not receive heartbeat from auth peer: " + str(e))
                 self.leave()
             try:
                 self.auth_socket.send(send_json({"<3": True}))
             except Exception as e:
-                self.messenger.add_error("Could not send heartbeat to auth peer")
-                print("Could not send heartbeat to auth peer")
+                self.messenger.add_error("Could not send heartbeat to auth peer: " + str(e))
                 self.leave()
                 return
 
