@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c24d4312-6b24-4ffb-b21a-2e74025fedb0" name="Changes" comment="Implementing convergence of protocol and messaging class">
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/pyile-protocol.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyile_protocol/lib/messenger/Messenger.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyile_protocol/lib/messenger/Messenger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyile_protocol/lib/peers/AuthPeer.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyile_protocol/lib/peers/AuthPeer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyile_protocol/lib/peers/Peer.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyile_protocol/lib/peers/Peer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyile_protocol/tests/test_auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyile_protocol/tests/test_auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyile_protocol/tests/test_send_peer.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyile_protocol/tests/test_send_peer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Unit Test" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;nburnet1&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="d41818cf-c91a-4eda-83c6-4c17cec39ebe" />
+        <option name="url" value="https://github.com/nburnet1/pyile-protocol" />
+      </UrlAndAccount>
+    </option>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: -1
+}</component>
+  <component name="ProjectId" id="2Qer8IubXo17konnGUA2aGNv47a" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "feature",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "swagger",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RdControllerToolWindowsLayoutState" isNewUi="true">
+    <layout>
+      <window_info id="Commit_Guest" />
+      <window_info id="Space Code Reviews" order="0" />
+      <window_info id="Bookmarks" order="1" side_tool="true" />
+      <window_info id="Merge Requests" order="2" />
+      <window_info id="Structure" order="3" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="4" />
+      <window_info active="true" id="Commit" order="5" visible="true" weight="0.33007812" />
+      <window_info id="Learn" order="6" weight="0.33007812" />
+      <window_info id="Pull Requests" order="7" weight="0.33007812" />
+      <window_info anchor="bottom" id="Run" weight="0.2652778" />
+      <window_info anchor="bottom" id="Find" show_stripe_button="false" weight="0.3300926" />
+      <window_info anchor="bottom" id="Version Control" order="0" weight="0.3300926" />
+      <window_info anchor="bottom" id="Database Changes" order="1" />
+      <window_info anchor="bottom" id="TypeScript" order="2" />
+      <window_info anchor="bottom" id="Endpoints" order="3" weight="0.3300926" />
+      <window_info anchor="bottom" id="Python Packages" order="4" />
+      <window_info anchor="bottom" id="TODO" order="5" weight="0.3300926" />
+      <window_info anchor="bottom" id="File Transfer" order="6" />
+      <window_info anchor="bottom" id="Python Console" order="7" weight="0.3300926" />
+      <window_info anchor="bottom" id="Problems View" order="8" weight="0.3300926" />
+      <window_info anchor="bottom" x="2877" y="-603" width="1066" height="1162" id="Terminal" order="9" weight="0.3300926" />
+      <window_info anchor="bottom" id="Debug" order="10" weight="0.47175926" />
+      <window_info anchor="bottom" id="Services" order="11" />
+      <window_info anchor="right" id="Meet New UI" show_stripe_button="false" side_tool="true" weight="0.33007812" />
+      <window_info anchor="right" id="Database" order="0" weight="0.33007812" />
+      <window_info anchor="right" id="github.copilotToolWindow" order="1" weight="0.33007812" />
+      <window_info anchor="right" id="SciView" order="2" />
+      <window_info anchor="right" id="Notifications" order="3" weight="0.33007812" />
+    </layout>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c24d4312-6b24-4ffb-b21a-2e74025fedb0" name="Changes" comment="" />
+      <created>1685724730232</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1685724730232</updated>
+      <workItem from="1685724735070" duration="659000" />
+      <workItem from="1685733438863" duration="597000" />
+      <workItem from="1686574173496" duration="598000" />
+      <workItem from="1686915635375" duration="1763000" />
+      <workItem from="1687180848349" duration="599000" />
+      <workItem from="1687548772471" duration="596000" />
+      <workItem from="1687984039065" duration="595000" />
+      <workItem from="1688150818280" duration="598000" />
+      <workItem from="1688577341953" duration="599000" />
+      <workItem from="1688990483806" duration="1820000" />
+      <workItem from="1689163059736" duration="40000" />
+      <workItem from="1689163142559" duration="599000" />
+      <workItem from="1689343539110" duration="674000" />
+      <workItem from="1691598828857" duration="1808000" />
+      <workItem from="1691601971279" duration="383000" />
+      <workItem from="1691603787775" duration="4153000" />
+      <workItem from="1691761179627" duration="14222000" />
+      <workItem from="1692194306391" duration="44000" />
+      <workItem from="1692194369917" duration="1591000" />
+      <workItem from="1692363507064" duration="875000" />
+      <workItem from="1692801789986" duration="890000" />
+      <workItem from="1692802774807" duration="7819000" />
+      <workItem from="1692988295951" duration="12630000" />
+      <workItem from="1693578783610" duration="2180000" />
+      <workItem from="1696604382975" duration="17276000" />
+    </task>
+    <task id="LOCAL-00001" summary="Fixed threading issue within heartbeat">
+      <created>1686943646715</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1686943646715</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Starting to implement JSON conversion">
+      <created>1686948505613</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1686948505614</updated>
+    </task>
+    <task id="LOCAL-00003" summary="JSON conversion complete and separate socket established for data distribution">
+      <created>1689604665207</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1689604665207</updated>
+    </task>
+    <task id="LOCAL-00004" summary="New Branch">
+      <option name="closed" value="true" />
+      <created>1692804055344</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1692804055344</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Fixed some multithreading joins">
+      <option name="closed" value="true" />
+      <created>1692805399343</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1692805399343</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Implementing convergence of protocol and messaging class">
+      <option name="closed" value="true" />
+      <created>1692810552237</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1692810552237</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Implementing convergence of protocol and messaging class">
+      <option name="closed" value="true" />
+      <created>1693578964828</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1693578964828</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Fixed threading issue within heartbeat" />
+    <MESSAGE value="Starting to implement JSON conversion" />
+    <MESSAGE value="JSON conversion complete and separate socket established for data distribution" />
+    <MESSAGE value="New Branch" />
+    <MESSAGE value="Fixed some multithreading joins" />
+    <MESSAGE value="Implementing convergence of protocol and messaging class" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implementing convergence of protocol and messaging class" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/pyile_protocol$Peer.coverage" NAME="Peer Coverage Results" MODIFIED="1691774000560" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pyile_protocol/lib/peers" />
+    <SUITE FILE_PATH="coverage/pyile_protocol$test_auth.coverage" NAME="test_auth Coverage Results" MODIFIED="1691774032903" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pyile_protocol/tests" />
+    <SUITE FILE_PATH="coverage/pyile_protocol$Messenger.coverage" NAME="Messenger Coverage Results" MODIFIED="1696606252778" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pyile_protocol/lib/messenger" />
+  </component>
+</project>

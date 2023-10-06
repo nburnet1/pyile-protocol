@@ -1,3 +1,4 @@
+import json
 import random
 import socket
 import threading
@@ -111,7 +112,6 @@ class Peer:
 
         """
         data = recv_json(addr.recv(self.BUFFER))
-        data["address"] = addr.getpeername()[0]
         self.messenger.add_message(data)
         addr.send(send_json({
             "data": data,
@@ -153,11 +153,16 @@ class Peer:
 
         """
         if msg_pass(data):
+            json_msg = {}
             for peer in self.peers:
                 if peer != self.peer_address:
-                    self.send(peer, data)
+                    print("broadcast:", peer)
+                    json_msg = self.send(peer, data, "Broadcast")
 
-    def send(self, address, data):
+            json_msg["self"] = True
+            self.messenger.add_message(json_msg)
+
+    def send(self, address, data, receiver):
         if address == self.peer_address:
             self.messenger.add_warning("Cannot send to self")
             return
@@ -165,13 +170,20 @@ class Peer:
             send_sock.settimeout(2)
             try:
                 send_sock.connect(address)
-                send_sock.send(send_json({
+                json_msg = {
                     "data": data,
-                    "alias": self.alias
-                }))
+                    "alias": self.alias,
+                    "to": receiver,
+                    "from": self.peer_address
+                }
+                send_sock.send(send_json(json_msg))
+                if receiver != "Broadcast":
+                    json_msg["self"] = True
+                    self.messenger.add_message(json_msg)
+                return json_msg
             except Exception as e:
                 send_sock.close()
-                self.messenger.add_info("Peer at " + address + " is not responding: " + str(e))
+                self.messenger.add_info("Peer at " + str(address) + " is not responding: " + str(e))
 
     def leave(self):
         """

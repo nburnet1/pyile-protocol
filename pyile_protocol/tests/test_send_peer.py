@@ -38,5 +38,10 @@ def test_peer():
             print(messenger.get_messages())
         elif data == "log":
             print(peer.messenger.seq_list)
+        elif "send:" in data:
+            data = data.split(":")
+            print(data)
+            print(tuple((data[2], int(data[3]))))
+            peer.send(tuple((data[2], int(data[3]))), data[1], tuple((data[2], int(data[3]))))
         else:
             peer.broadcast(data)

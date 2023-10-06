@@ -80,7 +80,7 @@ class AuthPeer(Peer):
                     self.limbo_peers[wrong_pw_addr] = 1
 
                 addr.send(auth)
-                raise AuthenticationException(str(addr.getpeername())+"entered the incorrect password.")
+                raise AuthenticationException(str(addr.getpeername()) + "entered the incorrect password.")
         except AuthenticationException as e:
             self.messenger.add_info(str(e))
             return None
