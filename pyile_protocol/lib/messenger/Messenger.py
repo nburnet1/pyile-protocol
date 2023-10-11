@@ -20,7 +20,13 @@ class Messenger:
         if type(message["from"]) == list:
             message["from"] = tuple((message["from"][0], message["from"][1]))
 
-        if "self" not in message:
+        if message["to"] == "Broadcast":
+            if message["to"] not in self.messages:
+                self.messages[message["to"]] = [json_msg]
+            else:
+                self.messages[message["to"]].append(json_msg)
+
+        elif "self" not in message:
             if message["from"] not in self.messages:
                 self.messages[message["from"]] = [json_msg]
             else:
