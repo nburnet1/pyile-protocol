@@ -6,7 +6,8 @@ from pyile_protocol.lib.messenger.Messenger import Messenger
 
 def test_auth():
     messenger = Messenger()
-    auth_peer = AuthPeer(address=("172.20.101.26", 4702), password_attempts=2, password="password", messenger=messenger, alias="admin")
+    auth_peer = AuthPeer(address=("172.20.101.26", 4702), password_attempts=2, password="password", messenger=messenger,
+                         alias="admin")
     # auth_peer = AuthPeer(("172.20.100.39", 4702), 1, "password")
     print(auth_peer)
 
@@ -35,5 +36,10 @@ def test_auth():
             print(auth_peer.blocked_peers)
         elif data == "log":
             print(auth_peer.messenger.seq_list)
+        elif "send:" in data:
+            data = data.split(":")
+            print(data)
+            print(tuple((data[2], int(data[3]))))
+            auth_peer.send(tuple((data[2], int(data[3]))), data[1], tuple((data[2], int(data[3]))))
         else:
             auth_peer.broadcast(data)
