@@ -156,7 +156,6 @@ class Peer:
             json_msg = {}
             for peer in self.peers:
                 if peer != self.peer_address:
-                    print("broadcast:", peer)
                     json_msg = self.send(peer, data, "Broadcast")
 
             json_msg["self"] = True

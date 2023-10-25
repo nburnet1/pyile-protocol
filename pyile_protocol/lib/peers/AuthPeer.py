@@ -151,6 +151,13 @@ class AuthPeer(Peer):
                 self.dist_sockets.remove(dist_addr)
                 self.changes_made = True
                 return
+            except ConnectionAbortedError:
+                self.messenger.add_info("Peer disconnected: " + str(peer_address))
+                self.peers.remove(peer_address)
+                self.connected_addrs.remove(addr)
+                self.dist_sockets.remove(dist_addr)
+                self.changes_made = True
+                return
             time.sleep(2)
 
     def auth_distribute(self):
