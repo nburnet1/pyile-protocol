@@ -8,19 +8,23 @@ The protocol is used for communication and authentication between peers.
 <h2>Protocol Overview</h2>
 <p>
 The Pyile protocol is used for peer-to-peer communication and authentication. This protocol allows for a single central 
-authenticator that established the network and is the source of all authentication within the given network. With this in mind,
+authenticator that establishes the network and is the source of all authentication within the given network. With this in mind,
 the authenticating peer has a unique role. It is still considered a peer which means that they still have full communication
 functionalities. The Pyile protocol supports another type of peer which is a <i>non-authenticating</i> peer or just <i>peer</i>.
 This type of peer only can be authenticated and send messages.
 </p>
 
-<h4>Sockets:</h4>
+<h4>Ports:</h4>
 <ul>
     <li><b>Port 4702</b>: Used as the main connection between peer and authenticating peer.</li>
-    <li><b>Dynamic and private port</b>: Randomly generated port that is within the private use range. Used for communication between
-    all peers.</li>
+	<li>
+		<b>Distribution Socket</b>: This randomly generated socket is responsible for the sets that the authenticating peer sends when a peer has joined or left.
+	</li>
     <li>
-    <b>Temporary Socket</b>: Used to send messages and broadcast but is then closed immediately after.
+		<b>Peer Port</b>: Randomly generated port that is within the private use range. Used for communication between all peers.
+	</li>
+    <li>
+		<b>Temporary Port</b>: Used to send messages and broadcast but is then closed immediately after.
     </li>
 </ul>
 
@@ -47,8 +51,12 @@ This type of peer only can be authenticated and send messages.
 
 * Any time an exit is called by a peer, the instance variable <i>disconnected</i> will be set to True. All sockets will be closed and any loose threads will be joined.
 
+<h4>Distribution</h4>
+
+* When the authenticating peer has changes made to the list of peers, it will then redistribute the list to all the peers in the network. This flow acts as a central authority of who is an actual peer of the network.
+
 <div></div>
-<img src="https://github.com/nburnet1/nburnet1.github.io/blob/main/public/Pyile.png"/>
+<img src="https://github.com/nburnet1/img/blob/main/peer.png"/>
 <h5><i>Figure 1</i></h5>
 
 <h3>Message Types</h3>
@@ -59,16 +67,10 @@ This type of peer only can be authenticated and send messages.
 * Set Distributions - When the Authenticating peer has made changes to the peer list, it redistributes to all the peers in the network.
 * Communication - Simple messaging between peers
 
-<h3>Error Handling</h3>
+<h3>Messenger</h3>
 <p>
-The protocol has custom exceptions to further the detail of errors:
+The messenger within Pyile acts as an interface that allows for other programs to robustly use the protocol. Therefore, there can be multiple frontend implementations. This messenger contains error handling along with all of the messages sent to and from the peer. 
 </p>
-<ul>
-    <li><i>AuthenticationException</i></li>
-    <li><i>StatusException</i></li>
-    <li><i>SendException</i></li>
-    <li><i>RecvException</i></li>
-</ul>
 
 
 <h3>Security</h3>
@@ -76,9 +78,12 @@ The protocol has custom exceptions to further the detail of errors:
 The protocol implements an authentication process equipped with a password check and banned status. At this time, there is no encryption.
 </p>
 
-<h2>Code Example</h2>
+
 
 <h4>Install</h4>
+<div>See <a href="https://github.com/nburnet1/pyile"> Pyile</a> for a complete application</div>
+
+<h2>Code Example</h2>
 
 ```
 pip install pyile_protocol
