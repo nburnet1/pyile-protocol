@@ -56,7 +56,7 @@ This type of peer only can be authenticated and send messages.
 * When the authenticating peer has changes made to the list of peers, it will then redistribute the list to all the peers in the network. This flow acts as a central authority of who is an actual peer of the network.
 
 <div></div>
-<img src="https://github.com/nburnet1/img/blob/main/peer.png"/>
+<img src="https://github.com/nburnet1/img/blob/main/peer1.png"/>
 <h5><i>Figure 1</i></h5>
 
 <h3>Message Types</h3>
